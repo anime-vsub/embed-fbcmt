@@ -1,81 +1,177 @@
+import 'dart:core';
 import 'dart:html';
 import "dart:async";
+import 'dart:web_gl';
 import 'dart:js' as js;
-import "./FB.dart";
 
-Future<void> loadFBSdk([
-  String? lang
-]) {
-  lang ??= window.navigator.language.replaceFirst("-", "_");
-  
-  final scriptEl = ScriptElement();
-  
-  scriptEl.src = "https://connect.facebook.net/$lang/sdk.js#xfbml=1&version=v15.0&autoLogAppEvents=1";
-  scriptEl.nonce = "XStSrfhG";
-  
-  final completer = Completer<void>();
-  var loadListener;
-  var errorListener;
-  
-  void onLoad(Event event) {
-    loadListener ?.cancel();
-    errorListener?.cancel();
-    
-    completer.complete();
-  }
-  void onError(Event event) {
-    loadListener ?.cancel();
-    errorListener?.cancel();
-    
-    completer.completeError(event);
-  }
-  
-  loadListener  = scriptEl.onLoad.listen(onLoad);
-  errorListener = scriptEl.onError.listen(onError);
-  
-  
-  document.head?.children.add(scriptEl);
-  
-  return completer.future;
-}
+import 'load-fb-sdk.dart';
+import 'set-config.dart';
+import 'FB.dart';
 
-void setConfig({
-  String colorscheme = "light",
-  required String href,
-  bool lazy = false,
-  bool? mobile,
-  int num_posts = 10,
-  String order_by = "reverse_time"/* "time" | "reverse_time" */,
-  int width = 550
-}) {
-  
-  final commentsEl = querySelector("#comments");
-  
-  if (commentsEl == null) {
-    throw Exception("#comments not exists");
-  }
-//  data-href="" data-width="" data-numposts="5"
-  commentsEl.dataset["colorscheme"]     = colorscheme;
-  commentsEl.dataset["href"]            = href;
-  commentsEl.dataset["lazy"]            = lazy ? "true" : "false";
-  if (mobile is bool)
-    commentsEl.dataset["mobile"]        = mobile ? "true" : "false";
-  commentsEl.dataset["numposts"]        = num_posts.toString();
-  commentsEl.dataset["order-by"]        = order_by;
-  commentsEl.dataset["width"]           = width.toString();
+class App {
+  late String colorscheme;
+  late String href;
+  late bool lazy = false;
+  late bool? mobile;
+  late int num_posts;
+  late String order_by; /* "time" | "reverse_time" */
 
-  if (js.context["FB"] != null)
-    FB.XFBML.parse();
+  late String lang;
+  late bool web_soket;
+
+  set status(String name) {
+    final loader = querySelector("#loader")!;
+
+    querySelector("#status")?.text = name;
+
+    if (name == "DONE") {
+      loader.style.display = "none";
+    } else {
+      loader.style.display = "flex";
+    }
+  }
+
+  App() {
+    // final uri = Uri.parse(window.location.toString());
+    final search = UrlSearchParams(window.location.search);
+
+    colorscheme = search.get("colorscheme") ?? 'light';
+    href = search.get("href") ?? '';
+    lazy = search.get("href") == "true";
+    final _mobile = search.get("mobile");
+    mobile = _mobile == "true" ? true : (_mobile == "false" ? false : null);
+    num_posts = int.tryParse(search.get("num_posts") ?? '') ?? 10;
+    order_by = search.get("order_by") ?? "reverse_time";
+
+    lang =
+        search.get("locale") ?? window.navigator.language.replaceFirst("-", "_");
+    web_soket = search.get("web_soket") != "false";
+
+    if (!web_soket) disableWebSoket();
+  }
+
+  Future<void> init() async {
+    await loadSdk();
+
+    listenMessage();
+    observeDuck();
+
+    reloadFBPlugin();
+  }
+
+  void disableWebSoket() {
+    js.context["WebSocket"] = null;
+  }
+
+  Future<void> loadSdk() async {
+    status = "LOADING_SDK";
+    await loadFBSdk(lang: lang).catchError((e) {
+      print("load FB SDK failed");
+      throw Exception(e);
+    });
+
+    print("FB SDK loaded");
+  }
+
+  void listenMessage() {
+    window.onMessage.listen((event) {
+      if (event.data is! Object || event.data["type"] != "update_value") return;
+      // if (event.data?.type != "update_value") return;
+
+      final value = event.data.value;
+      bool refreshPlugin = false;
+
+      switch (event.data.key) {
+        case "colorscheme":
+          if (colorscheme != value) {
+            colorscheme = value;
+            refreshPlugin = true;
+          }
+          break;
+        case "href":
+          if (href != value) {
+            href = value;
+            refreshPlugin = true;
+          }
+          ;
+          break;
+        case "lazy":
+          if (lazy != value) {
+            lazy = value;
+            refreshPlugin = true;
+          }
+          ;
+          break;
+        case "mobile":
+          if (mobile != value) {
+            mobile = value;
+            refreshPlugin = true;
+          }
+          ;
+          break;
+        case "num_posts":
+          if (num_posts != value) {
+            num_posts = value;
+            refreshPlugin = true;
+          }
+          ;
+          break;
+        case "order_by":
+          if (order_by != value) {
+            order_by = value;
+            refreshPlugin = true;
+          }
+          ;
+          break;
+      }
+
+      if (refreshPlugin) {
+        reloadFBPlugin();
+      }
+    });
+  }
+
+  void reloadFBPlugin() {
+    status = "LOADING_PLUGIN";
+    FB.Event.subscribe('xfbml.render', () {
+      status = "DONE";
+      // final frame = querySelector("iframe");
+      // frame?.onLoad.listen((event) {
+      //   status = "DONE";
+      // });
+    });
+
+    setConfig(
+        colorscheme: colorscheme,
+        href: href,
+        lazy: lazy,
+        mobile: mobile,
+        num_posts: num_posts,
+        order_by: order_by);
+  }
+
+  void observeDuck() {
+    final wrapperEl = querySelector(".wrapper");
+
+    if (wrapperEl == null) {
+      throw Exception(".wrapper");
+    }
+
+    final observer = MutationObserver((mutationList, observer) {
+      final nodeAdd = (mutationList[0].addedNodes[0] as Element);
+
+      if (nodeAdd.classes.contains("fb-comments") ||
+          nodeAdd.classes.contains("fb:comments")) {
+        // check for comments
+        reloadFBPlugin();
+        print("re-mount plugin comment");
+      }
+    });
+
+    observer.observe(wrapperEl, childList: true);
+  }
 }
 
 void main() async {
-  await loadFBSdk().catchError((e) {
-    print("load FB SDK failied");
-    throw Exception(e);
-  });
-  
-  print("FB SDK loaded");
-  final href =("https://developers.facebook.com/docs/plugins/comments#configurator");
-
-  setConfig(href: "https://googe.com", colorscheme: "dark");
+  App().init();
 }
