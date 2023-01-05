@@ -11,10 +11,10 @@ void setConfig({
   required int num_posts,
   required String order_by /* "time" | "reverse_time" */,
 }) {
-  final commentsEl = querySelector(".wrapper > *");
+  final commentsEl = querySelector("#wrapper > *");
 
   if (commentsEl == null) {
-    throw Exception(".wrapper > *");
+    throw Exception("#wrapper > *");
   }
 //  data-href="" data-width="" data-numposts="5"
   commentsEl.dataset["colorscheme"] = colorscheme;

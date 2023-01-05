@@ -9,7 +9,7 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-#loader {
+.popup {
   position: fixed;
   top: 0;
   left: 0;
@@ -23,8 +23,12 @@ body {
   flex-direction: column;
   font-size: 45px;
 }
+.dark .popup {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+}
 
-#status {
+.title {
   font-size: 14px;
   font-weight: 500;
   margin-top: 10px;
@@ -32,4 +36,9 @@ body {
 
 .fb-comments {
   width: 100%;
+}
+
+#loader,
+#error {
+  display: none;
 }

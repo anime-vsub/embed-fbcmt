@@ -7,6 +7,7 @@ import 'dart:js' as js;
 import 'load-fb-sdk.dart';
 import 'set-config.dart';
 import 'FB.dart';
+import 'constants.dart';
 
 class App {
   late String colorscheme;
@@ -20,14 +21,37 @@ class App {
   late bool web_soket;
 
   set status(String name) {
-    final loader = querySelector("#loader")!;
+    window.parent?.postMessage({'type': "status", 'error': name}, "*");
 
-    querySelector("#status")?.text = name;
+    final wrapper = querySelector("#wrapper");
+    final loader = querySelector("#loader");
+    final error = querySelector('#error');
 
-    if (name == "DONE") {
-      loader.style.display = "none";
-    } else {
-      loader.style.display = "flex";
+    switch (name) {
+      case LOADING_PLUGIN:
+      case LOADING_SDK:
+        wrapper?.style.display = "block";
+        loader?.style.display = "flex";
+        error?.style.display = "none";
+        querySelector("#loading_code")?.text = name;
+        break;
+      case DONE:
+        wrapper?.style.display = "block";
+        loader?.style.display = "none";
+        error?.style.display = "none";
+        querySelector("#loading_code")?.text = name;
+        break;
+      case ERROR_PARAM_REQUIRED:
+      case ERROR_LOAD_SDK:
+      case ERROR_UNKNOWN:
+        wrapper?.style.display = "none";
+        loader?.style.display = "none";
+        error?.style.display = "flex";
+        querySelector("#error_code")?.text = name;
+
+        break;
+      default:
+        window.console.warn("unknown status code: $name");
     }
   }
 
@@ -43,30 +67,36 @@ class App {
     num_posts = int.tryParse(search.get("num_posts") ?? '') ?? 10;
     order_by = search.get("order_by") ?? "reverse_time";
 
-    lang =
-        search.get("locale") ?? window.navigator.language.replaceFirst("-", "_");
+    lang = search.get("locale") ??
+        window.navigator.language.replaceFirst("-", "_");
     web_soket = search.get("web_soket") != "false";
 
-    if (!web_soket) disableWebSoket();
+    if (!web_soket) disableWebSocket();
   }
 
   Future<void> init() async {
-    await loadSdk();
+    try {
+      await loadSdk();
 
-    listenMessage();
-    observeDuck();
+      listenMessage();
+      observeDuck();
 
-    reloadFBPlugin();
+      reloadFBPlugin();
+    } catch (e) {
+      status = ERROR_UNKNOWN;
+      window.parent?.postMessage({"type": "error", "error": e}, "*");
+    }
   }
 
-  void disableWebSoket() {
+  void disableWebSocket() {
     js.context["WebSocket"] = null;
   }
 
   Future<void> loadSdk() async {
-    status = "LOADING_SDK";
+    status = LOADING_SDK;
     await loadFBSdk(lang: lang).catchError((e) {
       print("load FB SDK failed");
+      status = ERROR_LOAD_SDK;
       throw Exception(e);
     });
 
@@ -132,9 +162,17 @@ class App {
   }
 
   void reloadFBPlugin() {
-    status = "LOADING_PLUGIN";
+    if (href == "") {
+      window.console.warn("Param 'href' is required");
+      status = ERROR_PARAM_REQUIRED;
+      window.parent
+          ?.postMessage({'type': "error", 'error': ERROR_PARAM_REQUIRED}, "*");
+      return;
+    }
+
+    status = LOADING_PLUGIN;
     FB.Event.subscribe('xfbml.render', () {
-      status = "DONE";
+      status = DONE;
       // final frame = querySelector("iframe");
       // frame?.onLoad.listen((event) {
       //   status = "DONE";
@@ -151,10 +189,10 @@ class App {
   }
 
   void observeDuck() {
-    final wrapperEl = querySelector(".wrapper");
+    final wrapperEl = querySelector("#wrapper");
 
     if (wrapperEl == null) {
-      throw Exception(".wrapper");
+      throw Exception("#wrapper");
     }
 
     final observer = MutationObserver((mutationList, observer) {
