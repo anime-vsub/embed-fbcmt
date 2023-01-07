@@ -1,12 +1,35 @@
 {
-  "name": "embed-fbcmt",
+  "name": "embed-fbcmt-client",
+  "description": "client package for embed-fbcmt",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "client:build": "tsup",
+    "release": "pnpm client:build && bumpp"
+  },
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.mjs",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/main.mjs",
+      "require": "./dist/main.cjs",
+      "types": "./dist/main.d.ts"
+    },
+    "./vue": {
+      "import": "./dist/vue.mjs",
+      "require": "./dist/vue.cjs",
+      "types": "./dist/vue.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "vue": ["dist/vue.d.ts"]
+    }
   },
   "dependencies": {
     "@iconify/vue": "^4.0.2",
@@ -19,6 +42,7 @@
   "devDependencies": {
     "@types/node": "18",
     "@vitejs/plugin-vue": "^4.0.0",
+    "tsup": "^6.5.0",
     "typescript": "^4.9.3",
     "unplugin-auto-import": "^0.12.1",
     "vite": "^4.0.4",
