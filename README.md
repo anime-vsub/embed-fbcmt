@@ -25,7 +25,7 @@ pnpm add embed-fbcmt-client
 You can use this plugin anywhere I will give an example with `Vue`
 ```vue
 <template>
-   <button @click="setPropValue(cmtRef, 'lang', 'ja_JP')>Change lang to Japanese</button>
+   <button @click="setPropValue(cmtRef, 'lang', 'ja_JP')">Change lang to Japanese</button>
 
    <iframe ref="cmtRef" src="https://anime-vsub.github.io/embed-fbcmt?https://google.com&lang=en_US" />
 
