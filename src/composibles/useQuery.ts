@@ -25,6 +25,7 @@ export function useQuery<T>(
           query: {
             ...route.query,
             [name]: v === defaultValue || v === null ? undefined : v,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as unknown as any,
         })
       })

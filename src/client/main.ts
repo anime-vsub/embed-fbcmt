@@ -51,6 +51,7 @@ export function listenEvent(
 
     if (!typeCode) return
 
+    // eslint-disable-next-line n/no-callback-literal
     cb({
       type: typeCode,
       code: event.data.code,
@@ -61,6 +62,7 @@ export function listenEvent(
   return () => window.removeEventListener("message", handler)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getTypeCode(code: any) {
   if (code.startsWith("success.")) return "success"
   if (code.startsWith("loading.")) return "loading"

@@ -10,25 +10,28 @@
     data-width="100%"
   />
 
-  <Loader v-if="typeCode === 'loading'" :code="code" />
-  <Error v-if="typeCode === 'error'" :code="code" />
+  <Loader v-if="typeCode === 'loading'" :code="code!" />
+  <Error v-if="typeCode === 'error'" :code="code!" />
 </template>
 
 <script lang="ts" setup>
+import { useEventListener } from "@vueuse/core"
+import Error from "src/components/Error.vue"
+import Loader from "src/components/Loader.vue"
 import { useQuery } from "src/composibles/useQuery"
-import { watch, ref, computed } from "vue"
-import { loadFBSdk } from "src/logic/load-fb-sdk"
-import { useNavigatorLanguage, useEventListener } from "@vueuse/core"
-import {
-  Param_res__fb_set_value,
-  Param__req__fb_set_value,
+import type {
   CODES,
+  Param__emit__fb_embed,
+  Param_res__fb_set_value,
+} from "src/constants"
+import {
   ERROR_CODES,
   LOADING_CODES,
+  SET_VAL_CODES,
   SUCCESS_CODES,
 } from "src/constants"
-import Loader from "src/components/Loader.vue"
-import Error from "src/components/Error.vue"
+import { loadFBSdk } from "src/logic/load-fb-sdk"
+import { computed, ref, watch } from "vue"
 
 const code = ref<CODES | null>(null)
 const typeCode = computed<"success" | "loading" | "error" | null>(() => {
@@ -72,7 +75,7 @@ const numPosts = useQuery("num_posts", 10, (v) => {
   if (Number.isNaN(n)) return
 
   return n
-}) //ref(10)
+}) // ref(10)
 const orderBy = useQuery<"time" | "reverse_time">(
   "order_by",
   "reverse_time",
@@ -108,7 +111,7 @@ function sendSetValFailed(prop: string) {
   const res: Param_res__fb_set_value = {
     type: "res::fb:set_value",
     // prop,
-    code: ERROR_CODES.ERROR_INVALID_PROP,
+    code: SET_VAL_CODES.ERROR_INVALID_PROP,
     data: prop,
   }
   ;(window.parent || window.top)?.postMessage(res, origin.value)
@@ -139,6 +142,7 @@ useEventListener(
     if (event.data?.type !== "req::fb:set_value") return
 
     const { prop } = event.data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const val = event.data.val as any
     switch (prop) {
       case "color_scheme":
@@ -198,12 +202,15 @@ watch(
         return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
 
       sendCodeState(LOADING_CODES.LOADING_LOADING_PLUGIN)
-      window.FB!.Event.unsubscribe("xfbml.render")
-      window.FB!.Event.subscribe("xfbml.render", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+      ;(window as unknown as any).FB!.Event.unsubscribe("xfbml.render")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+      ;(window as unknown as any).FB!.Event.subscribe("xfbml.render", () => {
         sendCodeState(SUCCESS_CODES.SUCCESS_DONE)
       })
 
-      window.FB!.XFBML.parse()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+      ;(window as unknown as any).FB!.XFBML.parse()
     } catch (err) {
       console.error("load FB SDK failed")
       sendCodeState(ERROR_CODES.ERROR_LOAD_SDK_FAILED)
@@ -235,9 +242,10 @@ watch(
   }
  */
 
-watch([colorScheme, href /*, lazy*/, mobile, numPosts, orderBy], () => {
+watch([colorScheme, href /*, lazy */, mobile, numPosts, orderBy], () => {
   if (!href.value)
     return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
-  window.FB?.XFBML.parse()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(window as unknown as any).FB?.XFBML.parse()
 })
 </script>

@@ -1,10 +1,13 @@
+// eslint-disable-next-line functional/no-let
 let sdkLoaded = false
 
 export function loadFBSdk(lang: string, force?: boolean) {
   if (force) {
     sdkLoaded = false
-    window.FB?.Event.clear()
-    window.FB = undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as unknown as any).FB?.Event.clear()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as unknown as any).FB = undefined
   }
 
   if (sdkLoaded) return

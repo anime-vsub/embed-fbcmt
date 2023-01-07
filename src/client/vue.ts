@@ -10,6 +10,7 @@ export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
   const loading = ref(false)
   const error = ref(false)
 
+  // eslint-disable-next-line functional/no-let
   let cancel: (() => void) | null = null
 
   if (!isRef(el)) el = ref(el)
