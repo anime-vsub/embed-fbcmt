@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
+    "typing": "tsc --noEmit",
     "client:build": "tsup",
     "release": "pnpm client:build && bumpp"
   },

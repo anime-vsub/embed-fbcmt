@@ -27,5 +27,3 @@ export function loadFBSdk(lang: string, force?: boolean) {
     // script.remove()
   })
 }
-
-window.loadSdk = loadFBSdk
