@@ -1,4 +1,3 @@
-ERROR_CODES
 <template>
   <div
     class="fb-comments"
@@ -28,7 +27,7 @@ import {
   ERROR_CODES,
   LOADING_CODES,
   SUCCESS_CODES,
-} from "./message-event"
+} from "src/constants"
 import Loader from "src/components/Loader.vue"
 import Error from "src/components/Error.vue"
 

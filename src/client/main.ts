@@ -1,14 +1,27 @@
-const embed = document.querySelector("#embed")
+import {
+  Props,
+  Param__req__fb_set_value,
+  CODES,
+  Param__emit__fb_embed,
+  Param_res__fb_set_value,
+} from "src/constants"
 
-function setPropValue<T extends keyof Props>(el: HTMLIFrameElement, prop: T, value: Props[T]): Promise<void> {
+export function setPropValue<T extends keyof Props>(
+  el: HTMLIFrameElement,
+  prop: T,
+  value: Props[T]
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const handler = (event) => {
+    const handler = (event: MessageEvent<Param_res__fb_set_value>) => {
       if (event.data?.type === "res::fb:set_value") {
         const { code, data } = event.data
 
+        if (typeof code !== "string") return
+
         if (code.startsWith("success.")) resolve()
-        else if (code.startsWith("error.")) reject(Object.assign(new Error(code), { prop: data }))
-        else console.warn("[res::fb:set_value]: invalid code error '%s'", code);
+        else if (code.startsWith("error."))
+          reject(Object.assign(new Error(code), { prop: data }))
+        else console.warn("[res::fb:set_value]: invalid code error '%s'", code)
 
         window.removeEventListener("message", handler)
       }
@@ -20,14 +33,16 @@ function setPropValue<T extends keyof Props>(el: HTMLIFrameElement, prop: T, val
       prop,
       val: value,
     }
-    el.contentWindow.postMessage(res, "*")
+
+    if (el.contentWindow) el.contentWindow.postMessage(res, "*")
+    else reject()
   })
-()}
-function listenEvent(el: HTMLIFrameElement, cb: (event: {
-  type: "success" | "loading" | "error"
-  code: CODES
-}) => void): () => void {
-const handler = (event: MessageEvent<Param__emit__fb_embed>) => {
+}
+export function listenEvent(
+  el: HTMLIFrameElement,
+  cb: (event: { type: "success" | "loading" | "error"; code: CODES }) => void
+): () => void {
+  const handler = (event: MessageEvent<Param__emit__fb_embed>) => {
     if (event.source !== el.contentWindow) return
     if (event.data?.type !== "emit::fb_embed") return
 
@@ -37,15 +52,15 @@ const handler = (event: MessageEvent<Param__emit__fb_embed>) => {
 
     cb({
       type: typeCode,
-      code: event.data.code
+      code: event.data.code,
     })
   }
   window.addEventListener("message", handler)
 
-  return  () => window.removeEventListener("message", handler)
+  return () => window.removeEventListener("message", handler)
 }
 
-function getTypeCode(code) {
+export function getTypeCode(code: any) {
   if (code.startsWith("success.")) return "success"
   if (code.startsWith("loading.")) return "loading"
   if (code.startsWith("error.")) return "error"

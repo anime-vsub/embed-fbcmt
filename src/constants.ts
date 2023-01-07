@@ -1,5 +1,5 @@
 export enum SUCCESS_CODES {
-  SUCCESS_DONE = "success.done"
+  SUCCESS_DONE = "success.done",
 }
 export enum ERROR_CODES {
   ERROR_LOAD_SDK_FAILED = "error.load_sdk_failed",
@@ -19,20 +19,20 @@ export type CODES =
   | ERROR_CODES[keyof ERROR_CODES]
   | LOADING_CODES[keyof LOADING_CODES]
 export interface Param__emit__fb_embed {
-  type: "emit::fb_embed",
-  code: CODES,
+  type: "emit::fb_embed"
+  code: CODES
   data?: unknown
 }
 
 export type Props = {
-color_scheme: "light" | "dark"
-href: string
-lazy: boolean | undefined
-mobile: boolean | undefined
-num_posts: number
-order_by: "time" | "reverse_time",
-lang: string
- }
+  color_scheme: "light" | "dark"
+  href: string
+  lazy: boolean | undefined
+  mobile: boolean | undefined
+  num_posts: number
+  order_by: "time" | "reverse_time"
+  lang: string
+}
 export interface Param__req__fb_set_value<T extends keyof Props> {
   type: "req::fb:set_value"
   prop: T
