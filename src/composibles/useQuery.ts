@@ -1,5 +1,5 @@
-import { computed, ComputedRef, nextTick, unref } from "vue"
-import type { LocationQueryValue} from "vue-router";
+import { computed, nextTick } from "vue"
+import type { LocationQueryValue } from "vue-router"
 import { useRoute, useRouter } from "vue-router"
 
 export function useQuery<T>(

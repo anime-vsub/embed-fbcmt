@@ -1,5 +1,5 @@
 import type { CODES } from "src/constants"
-import type { Ref} from "vue";
+import type { Ref } from "vue"
 import { isRef, onBeforeUnmount, ref, watch } from "vue"
 
 import { listenEvent, setPropValue } from "./main"
