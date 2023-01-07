@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "typing": "vue-tsc --noEmit",
     "test": "echo 'No test'",
-    "pretit": "preitter src/",
+    "pretit": "prettier src/",
     "format": "prettier -w src/",
     "lint": "eslint src/",
     "ci": "pnpm format && pnpm lint && pnpm typing",
