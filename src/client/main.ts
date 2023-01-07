@@ -9,7 +9,8 @@ import {
 export function setPropValue<T extends keyof Props>(
   el: HTMLIFrameElement,
   prop: T,
-  value: Props[T]
+  value: Props[T],
+origin = "*"
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const handler = (event: MessageEvent<Param_res__fb_set_value>) => {
@@ -34,7 +35,7 @@ export function setPropValue<T extends keyof Props>(
       val: value,
     }
 
-    if (el.contentWindow) el.contentWindow.postMessage(res, "*")
+    if (el.contentWindow) el.contentWindow.postMessage(res, origin)
     else reject()
   })
 }

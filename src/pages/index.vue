@@ -87,6 +87,8 @@ const language = useQuery(
     (Array.isArray(v) ? v[0] : v) ?? window.navigator.language.replace("-", "_")
 )
 
+const origin = useQuery("origin", (window.parent || window.top)?.location.host ?? "*", v => Array.isArray(v)  ? v[0] : v)
+
 function sendSetValSuccess(prop: string) {
   const res: Param_res__fb_set_value = {
     type: "res::fb:set_value",
@@ -94,7 +96,7 @@ function sendSetValSuccess(prop: string) {
     code: SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS,
     data : prop,
   }
-  ;(window.parent || window.top)?.postMessage(res, "*")
+  ;(window.parent || window.top)?.postMessage(res, origin.value)
 }
 function sendSetValFailed(prop: string) {
   const res: Param_res__fb_set_value = {
@@ -103,7 +105,7 @@ function sendSetValFailed(prop: string) {
     code: ERROR_CODES.ERROR_INVALID_PROP,
     data : prop,
   }
-  ;(window.parent || window.top)?.postMessage(res, "*")
+  ;(window.parent || window.top)?.postMessage(res, origin.value)
 }
 function sendCodeState(
   codeq: LOADING_CODES[keyof LOADING_CODES],
@@ -117,7 +119,7 @@ function sendCodeState(
     code: codeq,
     data,
   }
-  ;(window.parent || window.top)?.postMessage(res, "*")
+  ;(window.parent || window.top)?.postMessage(res, origin.value)
 }
 useEventListener(
   window,
