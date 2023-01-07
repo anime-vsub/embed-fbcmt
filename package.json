@@ -6,16 +6,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build:web": "vue-tsc && vite build",
+    "build:client": "tsup",
+    "build": "pnpm build:web && pnpm build:client",
     "preview": "vite preview",
     "typing": "vue-tsc --noEmit",
     "test": "echo 'No test'",
-    "client:build": "tsup",
     "pretit": "preitter src/",
     "format": "prettier -w src/",
     "lint": "eslint src/",
     "ci": "pnpm format && pnpm lint && pnpm typing",
-    "release": "pnpm client:build && bumpp"
+    "release": "bumpp"
   },
   "main": "./dist/main.cjs",
   "module": "./dist/main.mjs",
