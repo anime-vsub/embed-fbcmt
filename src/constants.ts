@@ -24,7 +24,7 @@ export interface Param__emit__fb_embed {
   data?: unknown
 }
 
-export type Props = {
+export interface Props {
   color_scheme: "light" | "dark"
   href: string
   lazy: boolean | undefined
@@ -41,5 +41,5 @@ export interface Param__req__fb_set_value<T extends keyof Props> {
 export interface Param_res__fb_set_value {
   type: "res::fb:set_value"
   code: SET_VAL_CODES[keyof SET_VAL_CODES]
-  data: string //is prop set success
+  data: string // is prop set success
 }

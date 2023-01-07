@@ -1,10 +1,13 @@
-import { computed, nextTick, unref, ComputedRef } from "vue"
-import { LocationQueryValue, useRoute, useRouter } from "vue-router"
+import { computed, ComputedRef, nextTick, unref } from "vue"
+import type { LocationQueryValue} from "vue-router";
+import { useRoute, useRouter } from "vue-router"
 
 export function useQuery<T>(
   name: string,
   defaultValue: T,
-  assert: (value: string | LocationQueryValue[] | NonNullable<T> | null) => T | undefined | null
+  assert: (
+    value: string | LocationQueryValue[] | NonNullable<T> | null
+  ) => T | undefined | null
 ) {
   const route = useRoute()
   const router = useRouter()

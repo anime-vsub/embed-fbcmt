@@ -9,8 +9,7 @@
     :data-order-by="orderBy"
     data-width="100%"
   />
-  
-  
+
   <Loader v-if="typeCode === 'loading'" :code="code" />
   <Error v-if="typeCode === 'error'" :code="code" />
 </template>
@@ -35,7 +34,10 @@ const code = ref<CODES | null>(null)
 const typeCode = computed<"success" | "loading" | "error" | null>(() => {
   if (!code.value) return null
 
-  return (code.value as string).slice(0, (code.value as string).indexOf(".")) as "success" | "loading" | "error"
+  return (code.value as string).slice(
+    0,
+    (code.value as string).indexOf(".")
+  ) as "success" | "loading" | "error"
 })
 
 const colorScheme = useQuery<"dark" | "light">("color_scheme", "light", (v) =>
@@ -87,14 +89,18 @@ const language = useQuery(
     (Array.isArray(v) ? v[0] : v) ?? window.navigator.language.replace("-", "_")
 )
 
-const origin = useQuery("origin", (window.parent || window.top)?.location.host ?? "*", v => Array.isArray(v)  ? v[0] : v)
+const origin = useQuery(
+  "origin",
+  (window.parent || window.top)?.location.host ?? "*",
+  (v) => (Array.isArray(v) ? v[0] : v)
+)
 
 function sendSetValSuccess(prop: string) {
   const res: Param_res__fb_set_value = {
     type: "res::fb:set_value",
     // prop,
     code: SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS,
-    data : prop,
+    data: prop,
   }
   ;(window.parent || window.top)?.postMessage(res, origin.value)
 }
@@ -103,7 +109,7 @@ function sendSetValFailed(prop: string) {
     type: "res::fb:set_value",
     // prop,
     code: ERROR_CODES.ERROR_INVALID_PROP,
-    data : prop,
+    data: prop,
   }
   ;(window.parent || window.top)?.postMessage(res, origin.value)
 }
@@ -111,9 +117,8 @@ function sendCodeState(
   codeq: LOADING_CODES[keyof LOADING_CODES],
   data?: unknown
 ) {
-  
-  code.value=codeq
-  const res: Param__emit__fb_embed= {
+  code.value = codeq
+  const res: Param__emit__fb_embed = {
     type: "emit::fb_embed",
     // prop,
     code: codeq,
@@ -193,12 +198,12 @@ watch(
         return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
 
       sendCodeState(LOADING_CODES.LOADING_LOADING_PLUGIN)
-      window.FB.Event.unsubscribe("xfbml.render")
-      window.FB.Event.subscribe("xfbml.render", () =>{  
+      window.FB!.Event.unsubscribe("xfbml.render")
+      window.FB!.Event.subscribe("xfbml.render", () => {
         sendCodeState(SUCCESS_CODES.SUCCESS_DONE)
       })
 
-      window.FB.XFBML.parse()
+      window.FB!.XFBML.parse()
     } catch (err) {
       console.error("load FB SDK failed")
       sendCodeState(ERROR_CODES.ERROR_LOAD_SDK_FAILED)
@@ -231,7 +236,8 @@ watch(
  */
 
 watch([colorScheme, href /*, lazy*/, mobile, numPosts, orderBy], () => {
-  if (!href.value) return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
-      window.FB?.XFBML.parse()
+  if (!href.value)
+    return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
+  window.FB?.XFBML.parse()
 })
 </script>

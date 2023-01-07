@@ -1,5 +1,7 @@
-import { CODES } from "src/constants"
-import { isRef, onBeforeUnmount, Ref, ref, watch } from "vue"
+import type { CODES } from "src/constants"
+import type { Ref} from "vue";
+import { isRef, onBeforeUnmount, ref, watch } from "vue"
+
 import { listenEvent, setPropValue } from "./main"
 
 export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
@@ -35,7 +37,7 @@ export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
     },
     { immediate: true }
   )
-  
+
   onBeforeUnmount(() => cancel?.())
 
   return { code, loading, error }

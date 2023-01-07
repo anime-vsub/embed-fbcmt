@@ -1,16 +1,16 @@
-import {
-  Props,
-  Param__req__fb_set_value,
+import type {
   CODES,
   Param__emit__fb_embed,
+  Param__req__fb_set_value,
   Param_res__fb_set_value,
+  Props,
 } from "src/constants"
 
 export function setPropValue<T extends keyof Props>(
   el: HTMLIFrameElement,
   prop: T,
   value: Props[T],
-origin = "*"
+  origin = "*"
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const handler = (event: MessageEvent<Param_res__fb_set_value>) => {

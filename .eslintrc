@@ -1,0 +1,6 @@
+{
+    "extends": ["@tachibana-shin/eslint-config-vue"],
+    "rules": {
+        "camelcase": "off"
+    }
+}
