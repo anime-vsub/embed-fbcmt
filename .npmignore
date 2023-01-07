@@ -1,0 +1,7 @@
+examples/
+docs/
+src/
+.vscode/
+demo/
+.github/
+dist-web/
