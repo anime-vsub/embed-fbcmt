@@ -1,14 +1,6 @@
 <template>
-  <div
-    class="fb-comments"
-    :data-colorscheme="colorScheme"
-    :data-href="href"
-    :data-lazy="lazy"
-    :data-mobile="mobile"
-    :data-numposts="numPosts"
-    :data-order-by="orderBy"
-    data-width="100%"
-  />
+  <div class="fb-comments" :data-colorscheme="colorScheme" :data-href="href" :data-lazy="lazy" :data-mobile="mobile"
+    :data-numposts="numPosts" :data-order-by="orderBy" data-width="100%" />
 
   <Loader v-if="typeCode === 'loading'" :code="code!" />
   <Error v-if="typeCode === 'error'" :code="code!" />
@@ -98,6 +90,16 @@ const origin = useQuery(
   (v) => (Array.isArray(v) ? v[0] : v)
 )
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function postMessage(res: any, origin: string) {
+  const parent = (window.parent || window.top)
+
+  if (parent === window) return
+
+  if (origin === location.host) return
+
+  parent.postMessage(res, origin)
+}
 function sendSetValSuccess(prop: string) {
   const res: Param_res__fb_set_value = {
     type: "res::fb:set_value",
@@ -105,7 +107,7 @@ function sendSetValSuccess(prop: string) {
     code: SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS,
     data: prop,
   }
-  ;(window.parent || window.top)?.postMessage(res, origin.value)
+  postMessage(res, origin.value)
 }
 function sendSetValFailed(prop: string) {
   const res: Param_res__fb_set_value = {
@@ -114,7 +116,7 @@ function sendSetValFailed(prop: string) {
     code: SET_VAL_CODES.ERROR_INVALID_PROP,
     data: prop,
   }
-  ;(window.parent || window.top)?.postMessage(res, origin.value)
+  postMessage(res, origin.value)
 }
 function sendCodeState(
   codeq: LOADING_CODES[keyof LOADING_CODES],
@@ -127,7 +129,7 @@ function sendCodeState(
     code: codeq,
     data,
   }
-  ;(window.parent || window.top)?.postMessage(res, origin.value)
+  postMessage(res, origin.value)
 }
 useEventListener(
   window,
@@ -202,15 +204,15 @@ watch(
         return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
 
       sendCodeState(LOADING_CODES.LOADING_LOADING_PLUGIN)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      ;(window as unknown as any).FB!.Event.unsubscribe("xfbml.render")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      ;(window as unknown as any).FB!.Event.subscribe("xfbml.render", () => {
-        sendCodeState(SUCCESS_CODES.SUCCESS_DONE)
-      })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+        ; (window as unknown as any).FB!.Event.unsubscribe("xfbml.render")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+        ; (window as unknown as any).FB!.Event.subscribe("xfbml.render", () => {
+          sendCodeState(SUCCESS_CODES.SUCCESS_DONE)
+        })
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      ;(window as unknown as any).FB!.XFBML.parse()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+        ; (window as unknown as any).FB!.XFBML.parse()
     } catch (err) {
       console.error("load FB SDK failed")
       sendCodeState(ERROR_CODES.ERROR_LOAD_SDK_FAILED)
@@ -245,7 +247,7 @@ watch(
 watch([colorScheme, href /*, lazy */, mobile, numPosts, orderBy], () => {
   if (!href.value)
     return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ;(window as unknown as any).FB?.XFBML.parse()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ; (window as unknown as any).FB?.XFBML.parse()
 })
 </script>
