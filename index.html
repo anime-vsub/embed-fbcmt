@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      !(() => {
+        ;
+        [Element, Document].forEach((constructor) => {
+          const {
+            querySelectorAll
+          } = constructor.prototype
+          constructor.prototype.querySelectorAll = function(selector) {
+            if (selector.includes(".fb-comments")) return []
+
+            return querySelectorAll.call(this, selector)
+          }
+        })
+      })()
+    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Embed Facebook Comment Plugin</title>
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
