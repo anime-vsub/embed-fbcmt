@@ -1,4 +1,12 @@
 # embed-fbcmt (Embed Facebook Comment Plugin)
+
+[![GitHub license](https://img.shields.io/github/license/anime-vsub/embed-fbcmt)](https://github.com/anime-vsub/embed-fbcmt/blob/main/LICENSE) <img alt="GitHub Issues" src="https://img.shields.io/github/issues/anime-vsub/embed-fbcmt" /> <img alt="Code Score" src="https://api.codiga.io/project/35013/score/svg" /> <img alt="Code Score" src="https://api.codiga.io/project/35013/status/svg" />
+
+[![Test](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/test.yml/badge.svg)](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/test.yml)
+[![CodeQL](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/codeql.yml/badge.svg)](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/codeql.yml) [![ESLint](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/eslint.yml/badge.svg)](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/eslint.yml) [![Prettier](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/prettier.yml/badge.svg)](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/prettier.yml)
+[![TypeScript Checker Declaration](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/typing.yml/badge.svg)](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/typing.yml)
+[![Try build](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/try-build.yml/badge.svg)](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/try-build.yml)
+
 This is a plugin allow embed [Facebook Comment Plugin](https://developers.facebook.com/docs/plugins/comments/) to website SPA
 
 ## Usage
