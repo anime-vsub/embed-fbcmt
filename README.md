@@ -9,6 +9,8 @@
 
 This is a plugin allow embed [Facebook Comment Plugin](https://developers.facebook.com/docs/plugins/comments/) to website SPA
 
+Demo: https://anime-vsub.github.io/embed-fbcmt?href=https://google.com&no_socket=true&num_posts=20
+
 ## Usage
 Append this code to location show comment:
 ```html
