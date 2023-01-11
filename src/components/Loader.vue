@@ -7,7 +7,7 @@
         color: text,
       }"
     >
-      <Icon icon="eos-icons:loading" width="40" height="40" />
+      <Icon icon="eos-icons:loading" width="40" height="40" style="color: inherit" />
       <div class="text-subtitle1">
         {{ t(lang, code) }}
       </div>
