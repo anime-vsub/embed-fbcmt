@@ -17,11 +17,14 @@ Append this code to location show comment:
 > All mentioned [`options of FB comment plugin`](https://developers.facebook.com/docs/plugins/comments/) are available.
 In addition, you can also use some of the following custom options:
 
-| Option | Type | Description |
-| ------ | ---- | ----------- |
-| `lang` | code lang | language the plugin will display (example: `vi_VN`, `ja_JP`...) |
-| `loader_bg` | color | adjust background color when plugin is loading |
-| `loader_text` | color | adjust text color when plugin is loading |
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `lang` | code lang | `en_US` | language the plugin will display (example: `vi_VN`, `ja_JP`...) |
+| `loader_bg` | color | `rgba(0,0,0,0.8)` | adjust background color when plugin is loading |
+| `loader_text` | color | `white` | adjust text color when plugin is loading |
+| `origin` | host name | `*` | domain name will be sent the message. you can specify the hostname of the embedded website to increase security |
+| `no_socket` | boolean | `false` | whether to disable `WebSocket` to save resources |
+| `no_popup` | boolean | `false` | remove loading popup and use error warnings when you customize them |
 
 ## Package NPM
 This package allows you to send change requests to the plugin without losing the SDK reload time. A useful thing for SPA website

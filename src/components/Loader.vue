@@ -9,7 +9,7 @@
     >
       <Icon icon="eos-icons:loading" width="40" height="40" />
       <div class="text-subtitle1">
-        {{ code }}
+        {{ t(lang, code) }}
       </div>
     </div>
   </teleport>
@@ -18,9 +18,11 @@
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
 import { useRouteQuery } from "@vueuse/router"
-import { CODES } from "src/constants"
+import type { CODES } from "src/constants"
+import { t } from "src/i18n"
 
 defineProps<{
+  lang: string
   code: CODES
 }>()
 

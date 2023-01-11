@@ -14,13 +14,11 @@ export enum SET_VAL_CODES {
   ERROR_INVALID_PROP = "error.invalid_prop",
 }
 
-export type CODES =
-  | SUCCESS_CODES[keyof SUCCESS_CODES]
-  | ERROR_CODES[keyof ERROR_CODES]
-  | LOADING_CODES[keyof LOADING_CODES]
+export type CODES = SUCCESS_CODES | ERROR_CODES | LOADING_CODES
 export interface Param__emit__fb_embed {
   type: "emit::fb_embed"
   code: CODES
+  message: string
   data?: unknown
 }
 
@@ -40,6 +38,7 @@ export interface Param__req__fb_set_value<T extends keyof Props> {
 }
 export interface Param_res__fb_set_value {
   type: "res::fb:set_value"
-  code: SET_VAL_CODES[keyof SET_VAL_CODES]
+  code: SET_VAL_CODES
+  message: string
   data: string // is prop set success
 }
