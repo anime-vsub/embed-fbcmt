@@ -24,5 +24,5 @@ const langs = Object.fromEntries(
 )
 
 export function t(locale: typeof langs[0], key: CODES | SET_VAL_CODES): string {
-  return (langs[locale] ?? langs.en_US)[key] ?? key
+  return (langs[locale] ?? langs.en_US).default[key] ?? key
 }
