@@ -1,5 +1,6 @@
 # embed-fbcmt (Embed Facebook Comment Plugin)
 
+[![npm version](https://badge.fury.io/js/embed-fbcmt-client.svg)](https://badge.fury.io/js/embed-fbcmt-client)
 [![GitHub license](https://img.shields.io/github/license/anime-vsub/embed-fbcmt)](https://github.com/anime-vsub/embed-fbcmt/blob/main/LICENSE) <img alt="GitHub Issues" src="https://img.shields.io/github/issues/anime-vsub/embed-fbcmt" /> <img alt="Code Score" src="https://api.codiga.io/project/35013/score/svg" /> <img alt="Code Score" src="https://api.codiga.io/project/35013/status/svg" />
 
 [![Test](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/test.yml/badge.svg)](https://github.com/anime-vsub/embed-fbcmt/actions/workflows/test.yml)
