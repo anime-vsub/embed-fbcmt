@@ -63,11 +63,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
-        with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: dist-web # The folder the action should deploy.
+      - name: Push to branch `release`
+        run: |
+          git branch release -f
+          git push origin release -f
 
   changelog-release:
     needs: release
