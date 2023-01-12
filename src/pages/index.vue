@@ -98,7 +98,7 @@ const language = useQuery(
 
 const origin = useQuery(
   "origin",
-  (window.parent || window.top)?.location.host ?? "*",
+   "*",
   (v) => (Array.isArray(v) ? v[0] : v)
 )
 
