@@ -1,4 +1,4 @@
-import type { CODES, ERROR_CODES } from "src/constants"
+import type { CODES, ERROR_CODES, Props } from "src/constants"
 import { PENDING } from "src/constants"
 import type { Ref } from "vue"
 import { isRef, onBeforeUnmount, ref, watch } from "vue"
@@ -60,4 +60,14 @@ export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefin
 
   return { code, loading, error }
 }
-export { setPropValue }
+
+export async function setPropValue<T extends keyof Props>(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined,
+  prop: T,
+  value: Props[T],
+  origin = "*"
+): Promise<void> {
+	if (isRef(el)) el = el.value
+	
+	if (el) await setPropValue(el.value, prop, value, origin)
+}
