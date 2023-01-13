@@ -5,7 +5,7 @@ import { isRef, onBeforeUnmount, ref, watch } from "vue"
 
 import { listenEvent, setPropValue } from "./main"
 
-export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
+export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined) {
   const code = ref<{
     code: CODES | PENDING
     message?: string
