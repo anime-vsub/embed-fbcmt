@@ -29,6 +29,7 @@ In addition, you can also use some of the following custom options:
 | `loader_text` | color | `white` | adjust text color when plugin is loading |
 | `origin` | host name | `*` | domain name will be sent the message. you can specify the hostname of the embedded website to increase security |
 | `no_socket` | boolean | `false` | whether to disable `WebSocket` to save resources |
+| `active` | boolean | `true` | if this plugin is enabled if `false` then the plugin displays a blank page |
 | `no_popup` | boolean | `false` | remove loading popup and use error warnings when you customize them |
 
 ## Package NPM

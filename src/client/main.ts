@@ -15,13 +15,13 @@ export function setPropValue<T extends keyof Props>(
   return new Promise<void>((resolve, reject) => {
     const handler = (event: MessageEvent<Param_res__fb_set_value>) => {
       if (event.data?.type === "res::fb:set_value") {
-        const { code, data } = event.data
+        const { code, prop } = event.data
 
         if (typeof code !== "string") return
 
         if (code.startsWith("success.")) resolve()
         else if (code.startsWith("error."))
-          reject(Object.assign(new Error(code), { prop: data }))
+          reject(Object.assign(new Error(code), { prop }))
         else console.warn("[res::fb:set_value]: invalid code error '%s'", code)
 
         window.removeEventListener("message", handler)
@@ -41,7 +41,11 @@ export function setPropValue<T extends keyof Props>(
 }
 export function listenEvent(
   el: HTMLIFrameElement,
-  cb: (event: { type: "success" | "loading" | "error"; code: CODES }) => void
+  cb: (event: {
+    type: "success" | "loading" | "error"
+    code: CODES
+    message: string
+  }) => void
 ): () => void {
   const handler = (event: MessageEvent<Param__emit__fb_embed>) => {
     if (event.source !== el.contentWindow) return
@@ -55,6 +59,7 @@ export function listenEvent(
     cb({
       type: typeCode,
       code: event.data.code,
+      message: event.data.message,
     })
   }
   window.addEventListener("message", handler)

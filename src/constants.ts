@@ -14,12 +14,15 @@ export enum SET_VAL_CODES {
   ERROR_INVALID_PROP = "error.invalid_prop",
 }
 
+export enum PENDING {
+  PENDING = "pending"
+}
+
 export type CODES = SUCCESS_CODES | ERROR_CODES | LOADING_CODES
 export interface Param__emit__fb_embed {
   type: "emit::fb_embed"
   code: CODES
   message: string
-  data?: unknown
 }
 
 export interface Props {
@@ -40,5 +43,5 @@ export interface Param_res__fb_set_value {
   type: "res::fb:set_value"
   code: SET_VAL_CODES
   message: string
-  data: string // is prop set success
+  prop: string
 }

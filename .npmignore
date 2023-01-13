@@ -5,3 +5,4 @@ src/
 demo/
 .github/
 dist-web/
+dist/

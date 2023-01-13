@@ -1,14 +1,19 @@
-import type { CODES } from "src/constants"
+import type { CODES, ERROR_CODES } from "src/constants"
+import { PENDING } from "src/constants"
 import type { Ref } from "vue"
 import { isRef, onBeforeUnmount, ref, watch } from "vue"
 
 import { listenEvent, setPropValue } from "./main"
 
 export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
-  const code = ref<CODES | null>(null)
+  const code = ref<CODES | PENDING>(PENDING.PENDING)
 
   const loading = ref(false)
-  const error = ref(false)
+  const error = ref<
+    Error & {
+      code: ERROR_CODES
+    }
+  >()
 
   // eslint-disable-next-line functional/no-let
   let cancel: (() => void) | null = null
@@ -19,20 +24,25 @@ export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
     el,
     (el) => {
       cancel?.()
-      loading.value = error.value = false
+      loading.value = false
+      error.value = undefined
+      code.value = PENDING.PENDING
 
       if (!el) return
 
       cancel = listenEvent(el, (event) => {
         code.value = event.code
         if (event.type === "loading") {
-          error.value = false
+          error.value = undefined
           loading.value = true
         } else if (event.type === "error") {
           loading.value = false
-          error.value = true
+          error.value = Object.assign(new Error(event.message), {
+            code: event.type,
+          }) as unknown as Error & { code: ERROR_CODES }
         } else {
-          error.value = loading.value = false
+          loading.value = false
+          error.value = undefined
         }
       })
     },

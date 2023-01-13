@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="active"
     class="fb-comments"
     :data-colorscheme="colorScheme"
     :data-href="href"
@@ -10,7 +11,7 @@
     data-width="100%"
   />
 
-  <template v-if="!noPopup">
+  <template v-if="active && !noPopup">
     <Loader v-if="typeCode === 'loading'" :code="code!" :lang="language" />
     <Error v-if="typeCode === 'error'" :code="code!" :lang="language" />
   </template>
@@ -96,17 +97,11 @@ const language = useQuery(
     (Array.isArray(v) ? v[0] : v) ?? window.navigator.language.replace("-", "_")
 )
 
-const origin = useQuery(
-  "origin",
-   "*",
-  (v) => (Array.isArray(v) ? v[0] : v)
-)
+const origin = useQuery("origin", "*", (v) => (Array.isArray(v) ? v[0] : v))
 
 const noSocket = useQuery("no_socket", false, assertBool)
-if (noSocket.value) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ;(window as unknown as any).WebSocket = undefined
-}
+
+const active = useQuery("active", true, assertBool)
 
 const noPopup = useQuery("no_popup", false, assertBool)
 
@@ -123,31 +118,27 @@ function postMessage(res: any, origin: string) {
 function sendSetValSuccess(prop: string) {
   const res: Param_res__fb_set_value = {
     type: "res::fb:set_value",
-    // prop,
+    prop,
     code: SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS,
     message: t(language.value, SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS),
-    data: prop,
   }
   postMessage(res, origin.value)
 }
 function sendSetValFailed(prop: string) {
   const res: Param_res__fb_set_value = {
     type: "res::fb:set_value",
-    // prop,
+    prop,
     code: SET_VAL_CODES.ERROR_INVALID_PROP,
     message: t(language.value, SET_VAL_CODES.ERROR_INVALID_PROP),
-    data: prop,
   }
   postMessage(res, origin.value)
 }
-function sendCodeState(codeq: CODES, data?: unknown) {
+function sendCodeState(codeq: CODES) {
   code.value = codeq
   const res: Param__emit__fb_embed = {
     type: "emit::fb_embed",
-    // prop,
     code: codeq,
     message: t(language.value, codeq),
-    data,
   }
   postMessage(res, origin.value)
 }
@@ -195,6 +186,22 @@ useEventListener(
         language.value = val
         sendSetValSuccess(prop)
         break
+      case "origin":
+        origin.value = val
+        sendSetValSuccess(prop)
+        break
+      case "no_socket":
+        noSocket.value = val
+        sendSetValSuccess(prop)
+        break
+      case "active":
+        active.value = val
+        sendSetValSuccess(prop)
+        break
+      case "no_popup":
+        active.value = val
+        sendSetValFailed(prop)
+        break
       default:
         sendSetValFailed(prop + "")
     }
@@ -209,33 +216,66 @@ watch(
   { immediate: true }
 )
 
+function checkSdkLoaded(): boolean {
+  return typeof window.FB !== "undefined"
+}
+
+async function relauchSDK_Plugin() {
+  if (!href.value)
+    return console.error("[href_not_exists]: href option is undefined or null")
+
+  try {
+    sendCodeState(LOADING_CODES.LOADING_LOADING_SDK)
+
+    await loadFBSdk(language.value ?? "en_US", true)
+    console.log("FB SDK loaded")
+
+    if (!href.value)
+      return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
+
+    sendCodeState(LOADING_CODES.LOADING_LOADING_PLUGIN)
+    // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
+    window.FB!.Event.unsubscribe("xfbml.render")
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    window.FB!.Event.subscribe("xfbml.render", () => {
+      sendCodeState(SUCCESS_CODES.SUCCESS_DONE)
+    })
+
+    // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
+    window.FB!.XFBML.parse()
+  } catch (err) {
+    console.error("load FB SDK failed")
+    sendCodeState(ERROR_CODES.ERROR_LOAD_SDK_FAILED)
+  }
+}
+watch(language, relauchSDK_Plugin)
 watch(
-  language,
-  async (language = "en_US") => {
-    if (!href.value) return
+  noSocket,
+  (noSocket) => {
+    if (noSocket) {
+      ;[
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as unknown as any)._WebSocket,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as unknown as any).WebSocket,
+      ] = [window.WebSocket, undefined]
+    } else {
+      if (!window.WebSocket)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        window.WebSocket = (window as unknown as any)._WebSocket
+    }
 
-    try {
-      sendCodeState(LOADING_CODES.LOADING_LOADING_SDK)
-
-      await loadFBSdk(language, true)
-      console.log("FB SDK loaded")
-
-      if (!href.value)
-        return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
-
-      sendCodeState(LOADING_CODES.LOADING_LOADING_PLUGIN)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      ;(window as unknown as any).FB!.Event.unsubscribe("xfbml.render")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      ;(window as unknown as any).FB!.Event.subscribe("xfbml.render", () => {
-        sendCodeState(SUCCESS_CODES.SUCCESS_DONE)
-      })
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      ;(window as unknown as any).FB!.XFBML.parse()
-    } catch (err) {
-      console.error("load FB SDK failed")
-      sendCodeState(ERROR_CODES.ERROR_LOAD_SDK_FAILED)
+    if (checkSdkLoaded()) relauchSDK_Plugin()
+  },
+  { immediate: true }
+)
+watch(
+  active,
+  (active) => {
+    if (active) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (checkSdkLoaded()) window.FB!.XFBML.parse()
+      else relauchSDK_Plugin()
     }
   },
   { immediate: true }
@@ -267,7 +307,6 @@ watch(
 watch([colorScheme, href /*, lazy */, mobile, numPosts, orderBy], () => {
   if (!href.value)
     return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ;(window as unknown as any).FB?.XFBML.parse()
+  window.FB?.XFBML.parse()
 })
 </script>
