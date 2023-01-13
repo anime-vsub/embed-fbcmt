@@ -12,12 +12,12 @@
 
 This is a plugin allow embed [Facebook Comment Plugin](https://developers.facebook.com/docs/plugins/comments/) to website SPA
 
-Demo: https://embed-fbcmt.vercel.app?href=https://google.com&no_socket=true&num_posts=20
+Demo: https://anime-vsub.github.io/embed-fbcmt?href=https://google.com&no_socket=true&num_posts=20
 
 ## Usage
 Append this code to location show comment:
 ```html
-<iframe src="https://embed-fbcmt.vercel.app?<options>"></iframe>
+<iframe src="https://anime-vsub.github.io/embed-fbcmt?<options>"></iframe>
 ```
 > All mentioned [`options of FB comment plugin`](https://developers.facebook.com/docs/plugins/comments/) are available.
 In addition, you can also use some of the following custom options:
@@ -44,7 +44,7 @@ You can use this plugin anywhere I will give an example with `Vue`
 <template>
    <button @click="setPropValue(cmtRef, 'lang', 'ja_JP')">Change lang to Japanese</button>
 
-   <iframe ref="cmtRef" src="https://embed-fbcmt.vercel.app?https://google.com&lang=en_US" />
+   <iframe ref="cmtRef" src="https://anime-vsub.github.io/embed-fbcmt?https://google.com&lang=en_US" />
 
 </template>
 
