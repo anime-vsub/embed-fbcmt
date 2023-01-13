@@ -37,7 +37,7 @@ import {
 } from "src/constants"
 import { t } from "src/i18n"
 import { loadFBSdk } from "src/logic/load-fb-sdk"
-import type { WritableComputedRef } from "vue";
+import type { WritableComputedRef } from "vue"
 import { computed, ref, watch } from "vue"
 import type { LocationQueryValue } from "vue-router"
 

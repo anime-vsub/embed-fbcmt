@@ -1,5 +1,5 @@
-import type { PropType } from "vue";
-import { defineComponent, h , ref, watch } from "vue"
+import type { PropType } from "vue"
+import { defineComponent, h, ref, watch } from "vue"
 
 import { setPropValue } from "./vue"
 
