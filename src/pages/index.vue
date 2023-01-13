@@ -26,8 +26,8 @@ import type {
   CODES,
   Param__emit__fb_embed,
   Param__req__fb_set_value,
-Param_res__fb_set_value,
-Props,
+  Param_res__fb_set_value,
+  Props,
 } from "src/constants"
 import {
   ERROR_CODES,
@@ -149,9 +149,7 @@ function sendCodeState(codeq: CODES) {
 useEventListener(
   window,
   "message",
-  (
-    event: MessageEvent<Param__req__fb_set_value<keyof Props> | void>
-  ) => {
+  (event: MessageEvent<Param__req__fb_set_value<keyof Props> | void>) => {
     if (event.data?.type !== "req::fb:set_value") return
 
     const { prop } = event.data
@@ -307,7 +305,7 @@ watch(
 
 watch([colorScheme, href /*, lazy */, mobile, numPosts, orderBy], () => {
   if (!href.value)
-    return sendCodeState( ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
+    return sendCodeState(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
   window.FB?.XFBML.parse()
 })
 </script>

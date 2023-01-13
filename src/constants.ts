@@ -15,7 +15,7 @@ export enum SET_VAL_CODES {
 }
 
 export enum PENDING {
-  PENDING = "pending"
+  PENDING = "pending",
 }
 
 export type CODES = SUCCESS_CODES | ERROR_CODES | LOADING_CODES
