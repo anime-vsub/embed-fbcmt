@@ -25,7 +25,9 @@ import { useQuery } from "src/composibles/useQuery"
 import type {
   CODES,
   Param__emit__fb_embed,
-  Param_res__fb_set_value,
+  Param__req__fb_set_value,
+Param_res__fb_set_value,
+Props,
 } from "src/constants"
 import {
   ERROR_CODES,
@@ -115,8 +117,9 @@ function postMessage(res: any, origin: string) {
 
   parent.postMessage(res, origin)
 }
-function sendSetValSuccess(prop: string) {
+function sendsetvalsuccess(id: string, prop: string) {
   const res: Param_res__fb_set_value = {
+    id,
     type: "res::fb:set_value",
     prop,
     code: SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS,
@@ -124,8 +127,9 @@ function sendSetValSuccess(prop: string) {
   }
   postMessage(res, origin.value)
 }
-function sendSetValFailed(prop: string) {
+function sendSetValFailed(id: string, prop: string) {
   const res: Param_res__fb_set_value = {
+    id,
     type: "res::fb:set_value",
     prop,
     code: SET_VAL_CODES.ERROR_INVALID_PROP,
@@ -146,64 +150,61 @@ useEventListener(
   window,
   "message",
   (
-    event: MessageEvent<{
-      type?: unknown
-      prop?: unknown
-      val?: unknown
-    } | void>
+    event: MessageEvent<Param__req__fb_set_value<keyof Props> | void>
   ) => {
     if (event.data?.type !== "req::fb:set_value") return
 
     const { prop } = event.data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const val = event.data.val as any
+    const id = event.data.id
     switch (prop) {
       case "color_scheme":
         colorScheme.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "href":
         href.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "lazy":
         lazy.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "mobile":
         href.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "num_posts":
         numPosts.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "order_by":
         orderBy.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "lang":
         language.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "origin":
         origin.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "no_socket":
         noSocket.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "active":
         active.value = val
-        sendSetValSuccess(prop)
+        sendsetvalsuccess(id, prop)
         break
       case "no_popup":
         active.value = val
-        sendSetValFailed(prop)
+        sendSetValFailed(id, prop)
         break
       default:
-        sendSetValFailed(prop + "")
+        sendSetValFailed(id, prop + "")
     }
   }
 )
@@ -231,7 +232,7 @@ async function relauchSDK_Plugin() {
     console.log("FB SDK loaded")
 
     if (!href.value)
-      return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
+      return sendCodeState(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
 
     sendCodeState(LOADING_CODES.LOADING_LOADING_PLUGIN)
     // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
@@ -306,7 +307,7 @@ watch(
 
 watch([colorScheme, href /*, lazy */, mobile, numPosts, orderBy], () => {
   if (!href.value)
-    return sendSetValFailed(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
+    return sendCodeState( ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
   window.FB?.XFBML.parse()
 })
 </script>

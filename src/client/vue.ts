@@ -6,7 +6,12 @@ import { isRef, onBeforeUnmount, ref, watch } from "vue"
 import { listenEvent, setPropValue } from "./main"
 
 export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
-  const code = ref<CODES | PENDING>(PENDING.PENDING)
+  const code = ref<{
+    code: CODES | PENDING
+    message?: string
+  }>({
+    code: PENDING.PENDING,
+  })
 
   const loading = ref(false)
   const error = ref<
@@ -26,12 +31,14 @@ export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>) {
       cancel?.()
       loading.value = false
       error.value = undefined
-      code.value = PENDING.PENDING
+      code.value = {
+        code: PENDING.PENDING,
+      }
 
       if (!el) return
 
       cancel = listenEvent(el, (event) => {
-        code.value = event.code
+        code.value = event
         if (event.type === "loading") {
           error.value = undefined
           loading.value = true

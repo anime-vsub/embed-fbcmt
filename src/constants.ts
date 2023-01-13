@@ -33,13 +33,19 @@ export interface Props {
   num_posts: number
   order_by: "time" | "reverse_time"
   lang: string
+  origin: string
+  no_socket: boolean
+  active: boolean
+  no_popup: boolean
 }
 export interface Param__req__fb_set_value<T extends keyof Props> {
+  id: string
   type: "req::fb:set_value"
   prop: T
   val: Props[T]
 }
 export interface Param_res__fb_set_value {
+  id: string
   type: "res::fb:set_value"
   code: SET_VAL_CODES
   message: string

@@ -13,8 +13,10 @@ export function setPropValue<T extends keyof Props>(
   origin = "*"
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
+    const id = (Number.MAX_SAFE_INTEGER * Math.random()).toString(34)
+
     const handler = (event: MessageEvent<Param_res__fb_set_value>) => {
-      if (event.data?.type === "res::fb:set_value") {
+      if (event.data?.type === "res::fb:set_value" && id === event.data.id) {
         const { code, prop } = event.data
 
         if (typeof code !== "string") return
@@ -30,6 +32,7 @@ export function setPropValue<T extends keyof Props>(
 
     window.addEventListener("message", handler)
     const res: Param__req__fb_set_value<T> = {
+      id,
       type: "req::fb:set_value",
       prop,
       val: value,
