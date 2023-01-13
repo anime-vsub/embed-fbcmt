@@ -38,16 +38,14 @@ export interface Props {
   active: boolean
   no_popup: boolean
 }
-export interface Param__req__fb_set_value<T extends keyof Props> {
+export interface Param__req__fb_set_value {
   id: string
   type: "req::fb:set_value"
-  prop: T
-  val: Props[T]
+  props: Partial<Props>
 }
 export interface Param_res__fb_set_value {
   id: string
   type: "res::fb:set_value"
   code: SET_VAL_CODES
   message: string
-  prop: string
 }

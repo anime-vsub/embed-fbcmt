@@ -3,9 +3,11 @@ import { PENDING } from "src/constants"
 import type { Ref } from "vue"
 import { isRef, onBeforeUnmount, ref, watch } from "vue"
 
-import { listenEvent, setPropValue } from "./main"
+import { listenEvent, setPropValue as setProp } from "./main"
 
-export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined) {
+export function useEmbed(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+) {
   const code = ref<{
     code: CODES | PENDING
     message?: string
@@ -61,13 +63,29 @@ export function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefin
   return { code, loading, error }
 }
 
+export async function setPropValue(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined,
+  props: Partial<Props>,
+  origin?: string
+): Promise<void>
 export async function setPropValue<T extends keyof Props>(
   el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined,
   prop: T,
   value: Props[T],
-  origin = "*"
+  origin?: string
+): Promise<void>
+export async function setPropValue(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined,
+  prop: keyof Props | Partial<Props>,
+  value: unknown,
+  origin?: string
 ): Promise<void> {
-	if (isRef(el)) el = el.value
-	
-	if (el) await setPropValue(el.value, prop, value, origin)
+  if (isRef(el)) el = el.value
+
+  if (el) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await setProp(el, prop as unknown as any, value, origin as unknown as any)
+  }
 }
+
+export { default as EmbedFbCmt } from "./EmbedFbCmt"

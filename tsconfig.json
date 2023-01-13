@@ -11,7 +11,10 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "noEmit": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "./dist-client/",
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "src/*": ["./src/*"]
     }

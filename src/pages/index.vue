@@ -37,6 +37,7 @@ import {
 } from "src/constants"
 import { t } from "src/i18n"
 import { loadFBSdk } from "src/logic/load-fb-sdk"
+import type { WritableComputedRef } from "vue";
 import { computed, ref, watch } from "vue"
 import type { LocationQueryValue } from "vue-router"
 
@@ -73,7 +74,7 @@ const colorScheme = useQuery<"dark" | "light">("color_scheme", "light", (v) =>
 )
 const href = useQuery("href", "", (v) => (Array.isArray(v) ? v[0] : v)) // ref<string>()
 const lazy = useQuery("lazy", false, assertBool) // ref(false)
-const mobile = useQuery<boolean | void>("mobile", undefined, assertBool) // ref<void | boolean>()
+const mobile = useQuery<boolean | undefined>("mobile", undefined, assertBool) // ref<void | boolean>()
 const numPosts = useQuery("num_posts", 10, (v) => {
   if (Array.isArray(v)) v = v[0]
 
@@ -117,21 +118,19 @@ function postMessage(res: any, origin: string) {
 
   parent.postMessage(res, origin)
 }
-function sendsetvalsuccess(id: string, prop: string) {
+function sendsetvalsuccess(id: string) {
   const res: Param_res__fb_set_value = {
     id,
     type: "res::fb:set_value",
-    prop,
     code: SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS,
     message: t(language.value, SET_VAL_CODES.SUCCESS_SET_PROP_SUCCESS),
   }
   postMessage(res, origin.value)
 }
-function sendSetValFailed(id: string, prop: string) {
+function sendSetValFailed(id: string) {
   const res: Param_res__fb_set_value = {
     id,
     type: "res::fb:set_value",
-    prop,
     code: SET_VAL_CODES.ERROR_INVALID_PROP,
     message: t(language.value, SET_VAL_CODES.ERROR_INVALID_PROP),
   }
@@ -146,64 +145,38 @@ function sendCodeState(codeq: CODES) {
   }
   postMessage(res, origin.value)
 }
+
+const propsMap: {
+  [key in keyof Props]: WritableComputedRef<Props[key]>
+} = {
+  color_scheme: colorScheme,
+  href,
+  lazy,
+  mobile,
+  num_posts: numPosts,
+  order_by: orderBy,
+  lang: language,
+  origin,
+  no_socket: noSocket,
+  active,
+  no_popup: noPopup,
+}
+
 useEventListener(
   window,
   "message",
-  (event: MessageEvent<Param__req__fb_set_value<keyof Props> | void>) => {
+  (event: MessageEvent<Param__req__fb_set_value | void>) => {
     if (event.data?.type !== "req::fb:set_value") return
 
-    const { prop } = event.data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const val = event.data.val as any
-    const id = event.data.id
-    switch (prop) {
-      case "color_scheme":
-        colorScheme.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "href":
-        href.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "lazy":
-        lazy.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "mobile":
-        href.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "num_posts":
-        numPosts.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "order_by":
-        orderBy.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "lang":
-        language.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "origin":
-        origin.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "no_socket":
-        noSocket.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "active":
-        active.value = val
-        sendsetvalsuccess(id, prop)
-        break
-      case "no_popup":
-        active.value = val
-        sendSetValFailed(id, prop)
-        break
-      default:
-        sendSetValFailed(id, prop + "")
+    const { props, id } = event.data
+
+    for (const [key, val] of Object.entries(props)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (key in propsMap) (propsMap as unknown as any)[key].value = val
+      else sendSetValFailed(id)
     }
+
+    sendsetvalsuccess(id)
   }
 )
 

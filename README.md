@@ -85,3 +85,13 @@ function useEmbed(el: HTMLIFrameElement | Ref<HTMLIFrameElement>): {
    error: boolean // true is error emited
 }
 ```
+component:
+```vue
+<template>
+   <EmbedFbCmt href="https://google.com" />
+</template>
+
+<script lang="ts" setup>
+import { EmbedFbCmt } from "embed-fbcmt-client/vue"
+</script>
+```

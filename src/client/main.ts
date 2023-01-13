@@ -6,18 +6,36 @@ import type {
   Props,
 } from "src/constants"
 
+export function setPropValue(
+  el: HTMLIFrameElement,
+  props: Partial<Props>,
+  origin?: string
+): Promise<void>
 export function setPropValue<T extends keyof Props>(
   el: HTMLIFrameElement,
   prop: T,
   value: Props[T],
-  origin = "*"
+  origin?: string
+): Promise<void>
+export function setPropValue(
+  el: HTMLIFrameElement,
+  prop: keyof Props | Partial<Props>,
+  value: unknown,
+  origin?: string
 ): Promise<void> {
+  if (origin === undefined) {
+    // 3 paraments
+    origin = value as string
+    // prop is object
+    value = undefined
+  }
+
   return new Promise<void>((resolve, reject) => {
     const id = (Number.MAX_SAFE_INTEGER * Math.random()).toString(34)
 
     const handler = (event: MessageEvent<Param_res__fb_set_value>) => {
       if (event.data?.type === "res::fb:set_value" && id === event.data.id) {
-        const { code, prop } = event.data
+        const { code } = event.data
 
         if (typeof code !== "string") return
 
@@ -31,14 +49,13 @@ export function setPropValue<T extends keyof Props>(
     }
 
     window.addEventListener("message", handler)
-    const res: Param__req__fb_set_value<T> = {
+    const res: Param__req__fb_set_value = {
       id,
       type: "req::fb:set_value",
-      prop,
-      val: value,
+      props: typeof prop === "object" ? prop : { [prop]: value },
     }
 
-    if (el.contentWindow) el.contentWindow.postMessage(res, origin)
+    if (el.contentWindow) el.contentWindow.postMessage(res, origin ?? "*")
     else reject()
   })
 }
