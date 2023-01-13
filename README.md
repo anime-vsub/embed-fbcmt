@@ -1,6 +1,6 @@
 # embed-fbcmt (Embed Facebook Comment Plugin)
 
-![](https://netlifybadge.netlify.app/api/anime-vsub/embed-fbcmt)
+![](https://vercelbadge.vercel.app/api/anime-vsub/embed-fbcmt)
 [![npm version](https://badge.fury.io/js/embed-fbcmt-client.svg)](https://badge.fury.io/js/embed-fbcmt-client)
 
 [![GitHub license](https://img.shields.io/github/license/anime-vsub/embed-fbcmt)](https://github.com/anime-vsub/embed-fbcmt/blob/main/LICENSE) <img alt="GitHub Issues" src="https://img.shields.io/github/issues/anime-vsub/embed-fbcmt" /> <img alt="Code Score" src="https://api.codiga.io/project/35013/score/svg" /> <img alt="Code Score" src="https://api.codiga.io/project/35013/status/svg" />
@@ -12,12 +12,12 @@
 
 This is a plugin allow embed [Facebook Comment Plugin](https://developers.facebook.com/docs/plugins/comments/) to website SPA
 
-Demo: https://embed-fbcmt.netlify.app?href=https://google.com&no_socket=true&num_posts=20
+Demo: https://embed-fbcmt.vercel.app?href=https://google.com&no_socket=true&num_posts=20
 
 ## Usage
 Append this code to location show comment:
 ```html
-<iframe src="https://embed-fbcmt.netlify.app?<options>"></iframe>
+<iframe src="https://embed-fbcmt.vercel.app?<options>"></iframe>
 ```
 > All mentioned [`options of FB comment plugin`](https://developers.facebook.com/docs/plugins/comments/) are available.
 In addition, you can also use some of the following custom options:
@@ -43,7 +43,7 @@ You can use this plugin anywhere I will give an example with `Vue`
 <template>
    <button @click="setPropValue(cmtRef, 'lang', 'ja_JP')">Change lang to Japanese</button>
 
-   <iframe ref="cmtRef" src="https://embed-fbcmt.netlify.app?https://google.com&lang=en_US" />
+   <iframe ref="cmtRef" src="https://embed-fbcmt.vercel.app?https://google.com&lang=en_US" />
 
 </template>
 
