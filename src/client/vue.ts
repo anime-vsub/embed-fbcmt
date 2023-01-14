@@ -5,8 +5,16 @@ import { isRef, onBeforeUnmount, ref, watch } from "vue"
 
 import { listenEvent, listenResize, setPropValue as setProp } from "./main"
 
+type MayBeRef<T> = T | Ref<T>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isComponent<T>(el: any): el is {
+  $el: T
+} {
+  return typeof el.$el !== "undefined"
+}
+
 export function useEmbed(
-  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+  el: MayBeRef<HTMLIFrameElement | { $el: HTMLIFrameElement } | undefined>
 ) {
   const code = ref<{
     code: CODES | PENDING
@@ -27,8 +35,10 @@ export function useEmbed(
   if (!isRef(el)) el = ref(el)
 
   watch(
-    el,
+    el as Ref<HTMLIFrameElement | undefined>,
     (el) => {
+      if (isComponent<HTMLIFrameElement>(el)) el = el.$el
+
       cancelListenEvent?.()
       loading.value = false
       error.value = undefined
@@ -62,7 +72,7 @@ export function useEmbed(
   return { code, loading, error }
 }
 export function useEmbedSize(
-  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+  el: MayBeRef<HTMLIFrameElement | { $el: HTMLIFrameElement } | undefined>
 ) {
   // eslint-disable-next-line functional/no-let
   let cancelResizWEvent: (() => void) | null = null
@@ -74,7 +84,9 @@ export function useEmbedSize(
 
   if (!isRef(el)) el = ref(el)
 
-  watch(el, (el) => {
+  watch(el as Ref<HTMLIFrameElement | undefined>, (el) => {
+    if (isComponent<HTMLIFrameElement>(el)) el = el.$el
+
     cancelResizWEvent?.()
     cancelResizHEvent?.()
 
@@ -100,7 +112,7 @@ export function useEmbedSize(
   return { width, height }
 }
 export function useEmbedHeight(
-  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+  el: MayBeRef<HTMLIFrameElement | { $el: HTMLIFrameElement } | undefined>
 ) {
   // eslint-disable-next-line functional/no-let
   let cancelResizHEvent: (() => void) | null = null
@@ -109,7 +121,9 @@ export function useEmbedHeight(
 
   if (!isRef(el)) el = ref(el)
 
-  watch(el, (el) => {
+  watch(el as Ref<HTMLIFrameElement | undefined>, (el) => {
+    if (isComponent<HTMLIFrameElement>(el)) el = el.$el
+
     cancelResizHEvent?.()
 
     if (!el) return
@@ -129,27 +143,34 @@ export function useEmbedHeight(
 }
 
 export async function setPropValue(
-  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined,
+  el: MayBeRef<HTMLIFrameElement | { $el: HTMLIFrameElement } | undefined>,
   props: Partial<Props>,
   origin?: string
 ): Promise<void>
 export async function setPropValue<T extends keyof Props>(
-  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined,
+  el: MayBeRef<HTMLIFrameElement | { $el: HTMLIFrameElement } | undefined>,
   prop: T,
   value: Props[T],
   origin?: string
 ): Promise<void>
 export async function setPropValue(
-  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined,
+  el: MayBeRef<HTMLIFrameElement | { $el: HTMLIFrameElement } | undefined>,
   prop: keyof Props | Partial<Props>,
   value: unknown,
   origin?: string
 ): Promise<void> {
   if (isRef(el)) el = el.value
+  if (isComponent<HTMLIFrameElement>(el)) el = el.$el
 
   if (el) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await setProp(el, prop as unknown as any, value, origin as unknown as any)
+    await setProp(
+      el as unknown as HTMLIFrameElement,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      prop as unknown as any,
+      value,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      origin as unknown as any
+    )
   }
 }
 

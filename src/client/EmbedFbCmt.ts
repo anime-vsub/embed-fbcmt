@@ -94,7 +94,7 @@ export default defineComponent({
         allow: "encrypted-media",
         width: "100%",
         height: "100%",
-        style: { height: `${height}px` },
+        style: { height: `${height.value}px` },
       })
   },
 })
