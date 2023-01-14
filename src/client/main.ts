@@ -3,8 +3,9 @@ import type {
   Param__emit__fb_embed,
   Param__req__fb_set_value,
   Param_res__fb_set_value,
-  Props,
+  Props
 } from "src/constants"
+import { ERROR_CODES } from "src/constants"
 
 export function setPropValue(
   el: HTMLIFrameElement,
@@ -44,11 +45,21 @@ export function setPropValue(
           reject(Object.assign(new Error(code), { prop }))
         else console.warn("[res::fb:set_value]: invalid code error '%s'", code)
 
-        window.removeEventListener("message", handler)
+        cancel()
       }
     }
-
+    let timeout: number | NodeJS.Timeout | null  = null
+    const cancel = () => {
+      if (timeout) clearTimeout(timeout)
+      window.removeEventListener("message", handler)
+    }
+    
     window.addEventListener("message", handler)
+    timeout = setTimeout(() => {
+      cancel()
+      reject(new Error(ERROR_CODES.TIMEOUT))
+    }, 30_000)
+    
     const res: Param__req__fb_set_value = {
       id,
       type: "req::fb:set_value",

@@ -5,6 +5,7 @@ export default defineLocale({
 
   "error.load_sdk_failed": "Lỗi khi tải SDK",
   "error.params_href_not_exists": "Lỗi tham số 'href' là bắt buộc",
+  "error.timeout": "Hết thời gian chờ phản hồi",
 
   "loading.loading_sdk": "Đang tải SDK",
   "loading.loading_plugin": "Đang tải Plugin",

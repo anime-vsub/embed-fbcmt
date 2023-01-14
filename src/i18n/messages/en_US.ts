@@ -5,6 +5,7 @@ export default defineLocale({
 
   "error.load_sdk_failed": "Error loading SDK",
   "error.params_href_not_exists": "Error parameter 'href' is required",
+  "error.timeout": "Timeout",
 
   "loading.loading_sdk": "Loading SDK",
   "loading.loading_plugin": "Loading Plugin",

@@ -4,6 +4,7 @@ export enum SUCCESS_CODES {
 export enum ERROR_CODES {
   ERROR_LOAD_SDK_FAILED = "error.load_sdk_failed",
   ERROR_PARAMS_HREF_NOT_EXISTS = "error.params_href_not_exists",
+  ERROR_TIMEOUT = "error.timeout",
 }
 export enum LOADING_CODES {
   LOADING_LOADING_SDK = "loading.loading_sdk",

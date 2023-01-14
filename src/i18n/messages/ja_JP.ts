@@ -5,6 +5,7 @@ export default defineLocale({
 
   "error.load_sdk_failed": "SDKの読み込みエラー",
   "error.params_href_not_exists": "エラー パラメータ 'href' が必要です",
+  "error.timeout": "Timeout",
 
   "loading.loading_sdk": "SDKの読み込み中 ",
   "loading.loading_plugin": "プラグインの読み込み",
