@@ -1,7 +1,7 @@
 {
   "name": "embed-fbcmt-client",
   "description": "client package for embed-fbcmt",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "type": "module",
   "scripts": {
     "dev": "vite",
