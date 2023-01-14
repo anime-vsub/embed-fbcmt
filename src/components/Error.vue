@@ -1,7 +1,7 @@
 <template>
   <teleport to="body">
     <div
-      class="fixed top-0 left-0 w-full h-full z-10 flex flex-col items-center justify-center"
+      class="fixed top-0 left-0 w-full h-full z-10 flex flex-col items-center justify-center min-h-[100px]"
       :style="{
         'background-color': bg,
         color: text,
