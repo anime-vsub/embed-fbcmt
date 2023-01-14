@@ -30,6 +30,7 @@ import type {
   Props,
 } from "src/constants"
 import {
+  defaults,
   ERROR_CODES,
   LOADING_CODES,
   SET_VAL_CODES,
@@ -69,13 +70,19 @@ const typeCode = computed<"success" | "loading" | "error" | null>(() => {
   ) as "success" | "loading" | "error"
 })
 
-const colorScheme = useQuery<"dark" | "light">("color_scheme", "light", (v) =>
-  v === "dark" || v === "light" ? v : undefined
+const colorScheme = useQuery<"dark" | "light">(
+  "color_scheme",
+  defaults.color_scheme,
+  (v) => (v === "dark" || v === "light" ? v : undefined)
 )
 const href = useQuery("href", "", (v) => (Array.isArray(v) ? v[0] : v)) // ref<string>()
-const lazy = useQuery("lazy", false, assertBool) // ref(false)
-const mobile = useQuery<boolean | undefined>("mobile", undefined, assertBool) // ref<void | boolean>()
-const numPosts = useQuery("num_posts", 10, (v) => {
+const lazy = useQuery("lazy", defaults.lazy, assertBool) // ref(false)
+const mobile = useQuery<boolean | undefined>(
+  "mobile",
+  defaults.mobile,
+  assertBool
+) // ref<void | boolean>()
+const numPosts = useQuery("num_posts", defaults.num_posts, (v) => {
   if (Array.isArray(v)) v = v[0]
 
   const n = parseInt(v + "")
@@ -86,7 +93,7 @@ const numPosts = useQuery("num_posts", 10, (v) => {
 }) // ref(10)
 const orderBy = useQuery<"time" | "reverse_time">(
   "order_by",
-  "reverse_time",
+  defaults.order_by,
   (v) => {
     if (Array.isArray(v)) v = v[0]
 
@@ -95,18 +102,20 @@ const orderBy = useQuery<"time" | "reverse_time">(
 )
 const language = useQuery(
   "lang",
-  "en_US",
+  defaults.lang,
   (v) =>
     (Array.isArray(v) ? v[0] : v) ?? window.navigator.language.replace("-", "_")
 )
 
-const origin = useQuery("origin", "*", (v) => (Array.isArray(v) ? v[0] : v))
+const origin = useQuery("origin", defaults.origin, (v) =>
+  Array.isArray(v) ? v[0] : v
+)
 
-const noSocket = useQuery("no_socket", false, assertBool)
+const noSocket = useQuery("no_socket", defaults.no_socket, assertBool)
 
-const active = useQuery("active", true, assertBool)
+const active = useQuery("active", defaults.active, assertBool)
 
-const noPopup = useQuery("no_popup", false, assertBool)
+const noPopup = useQuery("no_popup", defaults.no_popup, assertBool)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function postMessage(res: any, origin: string) {

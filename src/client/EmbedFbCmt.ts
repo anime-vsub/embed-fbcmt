@@ -1,45 +1,63 @@
 import type { PropType } from "vue"
 import { defineComponent, h, ref, watch } from "vue"
 
-import { setPropValue } from "./vue"
+import type { Props } from "../constants"
+import { defaults } from "../constants"
 
-interface Props {
-  color_scheme?: "light" | "dark"
-  href: string
-  lazy?: boolean
-  mobile?: boolean
-  num_posts?: number
-  order_by?: "time" | "reverse_time"
-  lang?: string
-  origin?: string
-  no_socket?: boolean
-  active?: boolean
-  no_popup?: boolean
-  service?: string
-}
+import { setPropValue } from "./vue"
 
 export default defineComponent({
   props: {
-    color_scheme: String as PropType<Props["color_scheme"]>,
+    color_scheme: {
+      type: String as PropType<Props["color_scheme"]>,
+      default: defaults.color_scheme,
+    },
     href: {
       type: String as PropType<Props["href"]>,
       required: true,
     },
-    lazy: Boolean as PropType<Props["lazy"]>,
-    mobile: Boolean as PropType<Props["lazy"]>,
-    num_posts: Number as PropType<Props["num_posts"]>,
-    order_by: String as PropType<Props["order_by"]>,
-    lang: String as PropType<Props["lang"]>,
-    origin: String as PropType<Props["origin"]>,
-    no_socket: Boolean as PropType<Props["no_socket"]>,
-    active: Boolean as PropType<Props["active"]>,
-    no_popup: Boolean as PropType<Props["no_popup"]>,
+    lazy: {
+      type: Boolean as PropType<Props["lazy"]>,
+      default: defaults.lazy,
+    },
+    mobile: {
+      type: Boolean as PropType<Props["lazy"]>,
+      default: defaults.mobile,
+    },
+    num_posts: {
+      type: Number as PropType<Props["num_posts"]>,
+      default: defaults.num_posts,
+    },
+    order_by: {
+      type: String as PropType<Props["order_by"]>,
+      default: defaults.order_by,
+    },
+    lang: {
+      type: String as PropType<Props["lang"]>,
+      default: defaults.lang,
+    },
+    origin: {
+      type: String as PropType<Props["origin"]>,
+      default: defaults.origin,
+    },
+    no_socket: {
+      type: Boolean as PropType<Props["no_socket"]>,
+      default: defaults.no_socket,
+    },
+    active: {
+      type: Boolean as PropType<Props["active"]>,
+      default: defaults.active,
+    },
+    no_popup: {
+      type: Boolean as PropType<Props["no_popup"]>,
+      default: defaults.no_popup,
+    },
     service: {
-      type: String as PropType<Props["service"]>,
+      type: String as PropType<string>,
       default: "https://anime-vsub.github.io/embed-fbcmt",
     },
   },
-  setup(props: Props) {
+  setup(props) {
     const rootSrc = ref<string>()
     watch(
       () => props.service,

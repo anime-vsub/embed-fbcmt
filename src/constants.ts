@@ -49,3 +49,17 @@ export interface Param_res__fb_set_value {
   code: SET_VAL_CODES
   message: string
 }
+
+export const defaults: Omit<Props, "href"> = {
+  color_scheme: "light",
+  // href: "",
+  lazy: false,
+  mobile: undefined,
+  num_posts: 10,
+  order_by: "reverse_time",
+  lang: "en_US",
+  origin: "*",
+  no_socket: false,
+  active: true,
+  no_popup: false,
+}
