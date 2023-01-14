@@ -86,7 +86,7 @@ export default defineComponent({
     return () =>
       h("iframe", {
         src: rootSrc.value,
-        ref: "commentRef",
+        ref: commentRef,
         frameborder: "0",
         allowtransparency: "true",
         allowfullscreen: "true",
