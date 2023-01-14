@@ -76,6 +76,17 @@ function listenEvent(
    - `cb`: this function is cakked every time something changes in the embed
 - Return: `() => void` cancel
 
+```ts
+function listenResize(
+  el: HTMLIFrameElement,
+  type: "width" | "height",
+  cb: (size: number) => void
+): () => void
+```
+- Options:
+   - `el`: iframe embed plugin
+   - `cb`: this function is cakked every time something changes in the embed
+- Return: `() => void` cancel
 
 ### For vue
 ```ts
@@ -94,4 +105,19 @@ component:
 <script lang="ts" setup>
 import { EmbedFbCmt } from "embed-fbcmt-client/vue"
 </script>
+```
+
+```ts
+function useEmbedSize(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+): {
+  width: Ref<number>
+  height: Ref<number>
+}
+```
+
+```ts
+function useEmbedHeight(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+): Ref<number>
 ```

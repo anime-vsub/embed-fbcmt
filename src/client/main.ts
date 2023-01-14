@@ -2,8 +2,9 @@ import type {
   CODES,
   Param__emit__fb_embed,
   Param__req__fb_set_value,
+  Param__update_size,
   Param_res__fb_set_value,
-  Props
+  Props,
 } from "src/constants"
 import { ERROR_CODES } from "src/constants"
 
@@ -48,18 +49,19 @@ export function setPropValue(
         cancel()
       }
     }
-    let timeout: number | NodeJS.Timeout | null  = null
+    // eslint-disable-next-line functional/no-let
+    let timeout: number | NodeJS.Timeout | null = null
     const cancel = () => {
       if (timeout) clearTimeout(timeout)
       window.removeEventListener("message", handler)
     }
-    
+
     window.addEventListener("message", handler)
     timeout = setTimeout(() => {
       cancel()
-      reject(new Error(ERROR_CODES.TIMEOUT))
+      reject(new Error(ERROR_CODES.ERROR_TIMEOUT))
     }, 30_000)
-    
+
     const res: Param__req__fb_set_value = {
       id,
       type: "req::fb:set_value",
@@ -92,6 +94,21 @@ export function listenEvent(
       code: event.data.code,
       message: event.data.message,
     })
+  }
+  window.addEventListener("message", handler)
+
+  return () => window.removeEventListener("message", handler)
+}
+export function listenResize(
+  el: HTMLIFrameElement,
+  type: "width" | "height",
+  cb: (size: number) => void
+): () => void {
+  const handler = (event: MessageEvent<Param__update_size>) => {
+    if (event.source !== el.contentWindow) return
+    if (event.data?.type !== `update::fb_${type}`) return
+
+    cb(event.data.value)
   }
   window.addEventListener("message", handler)
 

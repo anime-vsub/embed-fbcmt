@@ -4,7 +4,7 @@ import { defineComponent, h, ref, watch } from "vue"
 import type { Props } from "../constants"
 import { defaults } from "../constants"
 
-import { setPropValue } from "./vue"
+import { setPropValue, useEmbedHeight } from "./vue"
 
 export default defineComponent({
   props: {
@@ -77,9 +77,11 @@ export default defineComponent({
     const commentRef = ref<HTMLIFrameElement>()
     watch(props, async (props) => {
       const cloned = { ...props }
-      delete cloned.service;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (cloned as unknown as any).service
       await setPropValue(commentRef, cloned)
     })
+    const height = useEmbedHeight(commentRef)
 
     return () =>
       h("iframe", {
@@ -92,6 +94,7 @@ export default defineComponent({
         allow: "encrypted-media",
         width: "100%",
         height: "100%",
+        style: { height: `${height}px` },
       })
   },
 })

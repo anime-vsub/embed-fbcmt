@@ -1,6 +1,7 @@
 <template>
   <div
     v-if="active"
+    ref="fbCommentsRef"
     class="fb-comments"
     :data-colorscheme="colorScheme"
     :data-href="href"
@@ -27,6 +28,7 @@ import type {
   Param__emit__fb_embed,
   Param__req__fb_set_value,
   Param_res__fb_set_value,
+  Param__update_size,
   Props,
 } from "src/constants"
 import {
@@ -41,6 +43,7 @@ import { loadFBSdk } from "src/logic/load-fb-sdk"
 import type { WritableComputedRef } from "vue"
 import { computed, ref, watch } from "vue"
 import type { LocationQueryValue } from "vue-router"
+import { useMutationObserver, useElementSize } from "@vueuse/core"
 
 function assertBool(
   v:
@@ -281,4 +284,41 @@ watch([colorScheme, href /*, lazy */, mobile, numPosts, orderBy], () => {
     return sendCodeState(ERROR_CODES.ERROR_PARAMS_HREF_NOT_EXISTS)
   window.FB?.XFBML.parse()
 })
+
+// =============== watch size =================
+const iframeRef = ref<HTMLIFrameElement>()
+
+const fbCommentsRef = ref<HTMLDivElement>()
+useMutationObserver(
+  fbCommentsRef,
+  (mutations) => {
+    mutations.forEach((mutation) => {
+      mutation?.addedNodes.forEach((nodeAdded) => {
+        if (
+          (nodeAdded as HTMLIFrameElement).tagName === "IFRAME" &&
+          (nodeAdded as HTMLIFrameElement)
+            .getAttribute("data-testid")
+            ?.includes("fb:comments")
+        ) {
+          iframeRef.value = nodeAdded as HTMLIFrameElement
+        }
+      })
+    })
+  },
+  {
+    subtree: true,
+    childList: true,
+  }
+)
+
+const { width, height } = useElementSize(iframeRef)
+watch(width, (width) => sendUpdateSize("width", width), { immediate: true })
+watch(height, (height) => sendUpdateSize("height", height), { immediate: true })
+function sendUpdateSize(type: "width" | "height", value: number) {
+  const res: Param__update_size = {
+    type: `update::fb_${type}`,
+    value,
+  }
+  postMessage(res, origin.value)
+}
 </script>

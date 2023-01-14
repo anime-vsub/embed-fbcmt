@@ -25,6 +25,10 @@ export interface Param__emit__fb_embed {
   code: CODES
   message: string
 }
+export interface Param__update_size {
+  type: `update::fb_${"width" | "height"}`
+  value: number
+}
 
 export interface Props {
   color_scheme: "light" | "dark"

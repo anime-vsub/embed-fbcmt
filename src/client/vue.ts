@@ -3,7 +3,7 @@ import { PENDING } from "src/constants"
 import type { Ref } from "vue"
 import { isRef, onBeforeUnmount, ref, watch } from "vue"
 
-import { listenEvent, setPropValue as setProp } from "./main"
+import { listenEvent, listenResize, setPropValue as setProp } from "./main"
 
 export function useEmbed(
   el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
@@ -23,14 +23,13 @@ export function useEmbed(
   >()
 
   // eslint-disable-next-line functional/no-let
-  let cancel: (() => void) | null = null
-
+  let cancelListenEvent: (() => void) | null = null
   if (!isRef(el)) el = ref(el)
 
   watch(
     el,
     (el) => {
-      cancel?.()
+      cancelListenEvent?.()
       loading.value = false
       error.value = undefined
       code.value = {
@@ -39,7 +38,7 @@ export function useEmbed(
 
       if (!el) return
 
-      cancel = listenEvent(el, (event) => {
+      cancelListenEvent = listenEvent(el, (event) => {
         code.value = event
         if (event.type === "loading") {
           error.value = undefined
@@ -58,9 +57,75 @@ export function useEmbed(
     { immediate: true }
   )
 
-  onBeforeUnmount(() => cancel?.())
+  onBeforeUnmount(() => cancelListenEvent?.())
 
   return { code, loading, error }
+}
+export function useEmbedSize(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+) {
+  // eslint-disable-next-line functional/no-let
+  let cancelResizWEvent: (() => void) | null = null
+  // eslint-disable-next-line functional/no-let
+  let cancelResizHEvent: (() => void) | null = null
+
+  const width = ref(0)
+  const height = ref(0)
+
+  if (!isRef(el)) el = ref(el)
+
+  watch(el, (el) => {
+    cancelResizWEvent?.()
+    cancelResizHEvent?.()
+
+    if (!el) return
+
+    cancelResizWEvent = listenResize(
+      el,
+      "width",
+      (value) => (width.value = value)
+    )
+    cancelResizHEvent = listenResize(
+      el,
+      "height",
+      (value) => (height.value = value)
+    )
+  })
+
+  onBeforeUnmount(() => {
+    cancelResizWEvent?.()
+    cancelResizHEvent?.()
+  })
+
+  return { width, height }
+}
+export function useEmbedHeight(
+  el: HTMLIFrameElement | Ref<HTMLIFrameElement | undefined> | undefined
+) {
+  // eslint-disable-next-line functional/no-let
+  let cancelResizHEvent: (() => void) | null = null
+
+  const height = ref(0)
+
+  if (!isRef(el)) el = ref(el)
+
+  watch(el, (el) => {
+    cancelResizHEvent?.()
+
+    if (!el) return
+
+    cancelResizHEvent = listenResize(
+      el,
+      "height",
+      (value) => (height.value = value)
+    )
+  })
+
+  onBeforeUnmount(() => {
+    cancelResizHEvent?.()
+  })
+
+  return height
 }
 
 export async function setPropValue(
@@ -89,3 +154,4 @@ export async function setPropValue(
 }
 
 export { default as EmbedFbCmt } from "./EmbedFbCmt"
+export { listenResize }
