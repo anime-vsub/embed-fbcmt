@@ -136,15 +136,6 @@ function sendsetvalsuccess(id: string) {
   }
   postMessage(res, origin.value)
 }
-function sendSetValFailed(id: string) {
-  const res: Param_res__fb_set_value = {
-    id,
-    type: "res::fb:set_value",
-    code: SET_VAL_CODES.ERROR_INVALID_PROP,
-    message: t(language.value, SET_VAL_CODES.ERROR_INVALID_PROP),
-  }
-  postMessage(res, origin.value)
-}
 function sendCodeState(codeq: CODES) {
   code.value = codeq
   const res: Param__emit__fb_embed = {
@@ -182,7 +173,7 @@ useEventListener(
     for (const [key, val] of Object.entries(props)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (key in propsMap) (propsMap as unknown as any)[key].value = val
-      else sendSetValFailed(id)
+      else console.warn("[embed-fbcmt]: Not support prop name is '%s'", key)
     }
 
     sendsetvalsuccess(id)

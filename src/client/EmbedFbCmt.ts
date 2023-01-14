@@ -75,12 +75,16 @@ export default defineComponent({
     )
 
     const commentRef = ref<HTMLIFrameElement>()
-    watch(props, async (props) => await setPropValue(commentRef, props))
+    watch(props, async (props) => {
+      const cloned = { ...props }
+      delete cloned.service;
+      await setPropValue(commentRef, cloned)
+    })
 
     return () =>
       h("iframe", {
         src: rootSrc.value,
-        ref_key: "commentRef",
+        ref: "commentRef",
         frameborder: "0",
         allowtransparency: "true",
         allowfullscreen: "true",
