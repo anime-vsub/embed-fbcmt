@@ -18,16 +18,16 @@
     "release": "bumpp"
   },
   "main": "./dist-client/main.cjs",
-  "module": "./dist-client/main.mjs",
+  "module": "./dist-client/main.js",
   "types": "./dist-client/main.d.ts",
   "exports": {
     ".": {
-      "import": "./dist-client/main.mjs",
+      "import": "./dist-client/main.js",
       "require": "./dist-client/main.cjs",
       "types": "./dist-client/main.d.ts"
     },
     "./vue": {
-      "import": "./dist-client/vue.mjs",
+      "import": "./dist-client/vue.js",
       "require": "./dist-client/vue.cjs",
       "types": "./dist-client/vue.d.ts"
     }
