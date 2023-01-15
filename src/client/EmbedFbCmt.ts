@@ -94,6 +94,11 @@ export default defineComponent({
         allow: "encrypted-media",
         width: "100%",
         height: "100%",
+
+        allow: "encrypted-media",
+        sandbox:
+          "allow-forms allow-scripts allow-same-origin allow-top-navigation allow-top-navigation-by-user-activation allow-popups allow-popups-to-escape-sandbox",
+
         style: { height: `${height.value}px` },
       })
   },
