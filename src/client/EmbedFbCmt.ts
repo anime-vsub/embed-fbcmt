@@ -91,7 +91,6 @@ export default defineComponent({
         allowtransparency: "true",
         allowfullscreen: "true",
         scrolling: "no",
-        allow: "encrypted-media",
         width: "100%",
         height: "100%",
 
